@@ -1,0 +1,10 @@
+---
+- name: Install some S/W's
+  hosts: all
+  tasks:
+    - name: Install S/W apps
+      apt:
+        name: "{{a}}"
+        state: "{{b}}"
+        update_cache: "{{c}}"
+...
