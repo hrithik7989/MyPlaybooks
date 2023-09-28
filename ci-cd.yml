@@ -1,0 +1,98 @@
+---
+- name: install required s/w's on dev server
+  hosts: devserver
+  tasks:
+    - name: install s/w's
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: git,b: present,c: yes}
+        - {a: maven,b: present,c: no}
+        - {a: openjdk-11-jdk,b: present,c: no}
+- name: install required s/w's on qa server
+  hosts: qaserver
+  tasks:
+    - name: install required s/w's
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: git,b: present,c: yes}
+        - {a: openjdk-11-jdk,b: present,c: no}
+        - {a: tomcat9,b: present,c: no}
+        - {a: tomcat9-admin,b: present,c: no}
+- name: install required s/w's on prodserver
+  hosts: prodserver
+  tasks:
+    - name: install required s/w's
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: tomcat9,b: present,c: yes}
+        - {a: tomcat9-admin,b: present,c: no}
+- name: con  Download and con build
+  hosts: devserver
+  tasks:
+    - name: download code from github
+      git:
+        repo: https://github.com/hrithik7989/maven.git
+        dest: dev-git
+    - name: create an artifact from above code
+      shell: cd dev-git;mvn package
+    - name: fetch the artifact to the controller
+      fetch:
+        src: dev-git/webapp/target/webapp.war
+        dest: /tmp
+- name: continuous Deployment and con testing
+  hosts: qaserver
+  tasks:
+    - name: Deploy artifact into tomcat on qa server
+      copy:
+        src: /tmp/172.31.91.47/dev-git/webapp/target/webapp.war
+        dest: /var/lib/tomcat9/webapps/testapp.war
+    - name: Download the selenium scripts
+      git:
+        repo: https://github.com/hrithik7989/test.git
+        dest: test-git
+    - name: run the selenium scripts
+      shell: java -jar test-git/testing.jar
+- name: cont delivery
+  hosts: prodserver
+  tasks:
+    - name: deploy artifact into prod server
+      copy:
+         src: /tmp/172.31.91.47/dev-git/webapp/target/webapp.war
+         dest: /var/lib/tomcat9/webapps/prodapp.war
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+...

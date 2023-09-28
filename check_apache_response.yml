@@ -1,0 +1,9 @@
+---
+- name: check apache response on all managed nodes
+  uri:
+    url: "{{item}}"
+    status_code: 200
+  with_items:
+    - http://172.31.41.201
+    - http://172.31.36.84
+...
