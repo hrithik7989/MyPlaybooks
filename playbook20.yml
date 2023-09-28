@@ -1,0 +1,17 @@
+---
+- name: Install apache on all servers
+  hosts: all
+  tasks:
+    - block:
+      - name: Install apache on ubuntu servers
+        apt:
+          name: apache2
+          state: present
+          update_cache: yes
+      rescue:
+      - name: install httpd on RHEL servers
+        yum:
+          name: httpd
+          state: present
+          update_cache: yes
+...
