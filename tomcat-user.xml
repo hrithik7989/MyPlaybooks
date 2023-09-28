@@ -1,3 +1,0 @@
-<tomcat-users>
-	<user username="admin" password="123456" roles="manager-script"/>
-</tomcat-users>
