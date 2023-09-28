@@ -1,0 +1,31 @@
+---
+- name: configure apache/httpd based  on os
+  hosts: all
+  tasks:
+    - name: install apache2 on ubuntu servers
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+    - name: install httpd on Rhel servers
+      yum:
+        name: httpd
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "RedHat"
+    - name: edit the index.html file
+      include: edit_index.yml
+    - name: Restart apache2 on ubuntu servers
+      service:
+        name: apache2
+        state: restarted
+      when: ansible_distribution == "Ubuntu"
+    - name: Restart httpd on RHEL servers
+      service:
+        name: httpd
+        state: restarted
+      when: ansible_distribution == "RedHat"
+    - name: check apache/httpd response on all servers
+      include: check_apache_response.yml
+...
